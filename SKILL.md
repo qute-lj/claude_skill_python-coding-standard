@@ -82,7 +82,7 @@ description: This skill provides comprehensive Python coding standards and best 
 
 完整的输出管理规范请参考 `references/output_standards.md`。
 
-### 4. Matplotlib 可视化最佳实践
+### 3. Matplotlib 可视化最佳实践
 
 #### LaTeX 公式使用规范
 
@@ -138,7 +138,7 @@ ax.text2D(0.02, 0.02,
           bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
 ```
 
-### 5. Logging 最佳实践
+### 4. Logging 最佳实践
 
 #### 使用 Loguru（默认推荐）
 
@@ -196,7 +196,7 @@ def log_computation_info(func_name, params, result, time_elapsed):
     logger.info(f"计算耗时: {time_elapsed:.4f} 秒")
 ```
 
-### 6. 数值误差分析
+### 5. 数值误差分析
 
 #### 误差评估函数
 

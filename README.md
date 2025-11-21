@@ -1,34 +1,38 @@
 # Python 科学计算代码书写规范
 
-[![Skill Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/yourusername/python-coding-standard)
+[![Skill Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/qute-lj/python-coding-standard)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-> 专为科学计算设计的 Python 代码规范和最佳实践指南，包含环境管理、可视化规范、日志记录等基础设施。
+> 专为科学计算设计的 Python 代码规范和最佳实践，包含环境管理、输出文件规范、可视化、日志记录和数值误差分析。
+
+## 📖 概述
+
+本规范为科学计算 Python 代码提供全面的编码标准，涵盖从环境设置到结果输出的完整流程。作为 Claude Skill，可在需要编写专业科学计算代码时自动应用。
 
 ## 🎯 适用场景
 
-当你需要：
-- ✅ 设置和管理 Python conda 环境
-- ✅ 创建专业的科学可视化图表
-- ✅ 实现规范的日志记录系统（默认使用 Loguru）
-- ✅ 统一输出文件命名规范
-- ✅ 正确使用 LaTeX 数学公式
-- ✅ 编写符合科研标准的 Python 代码
+当用户需要：
+- 设置和管理 Python conda 环境
+- 建立统一的输出文件管理体系
+- 创建专业的科学可视化图表
+- 实现规范的日志记录系统
+- 分析和控制数值计算误差
+- 编写符合科研标准的 Python 代码
 
 ## 📁 项目结构
 
 ```
 python-coding-standard/
 ├── SKILL.md                    # Claude Skill 主文档
-├── scripts/
+├── scripts/                    # 实用工具脚本
 │   ├── check_env.bat          # Windows 环境检查工具
 │   └── run_with_env.bat       # 指定环境运行脚本
-├── references/
-│   ├── conda_commands.md      # Conda 环境管理命令大全
+├── references/                 # 详细参考资料
+│   ├── conda_commands.md      # Conda 环境管理命令
 │   ├── matplotlib_examples.md  # Matplotlib 最佳实践示例
-│   ├── logging_best_practices.md # 日志内容选择指南
-│   ├── loguru_guide.md        # Loguru 日志库详细指南（默认）
+│   ├── logging_best_practices.md # 日志最佳实践指南
+│   ├── loguru_guide.md        # Loguru 日志库详细指南
 │   ├── latex_symbols.md       # LaTeX 数学符号速查表
 │   └── output_standards.md    # 输出文件规范指南
 └── README.md                  # 本文件
@@ -36,21 +40,56 @@ python-coding-standard/
 
 ## 🚀 快速开始
 
-### 1. 环境检查（Windows）
+### 1. 环境检查与激活
 
+**Windows 用户：**
 ```batch
 # 检查所有 conda 环境
 scripts\check_env.bat
+
+# 使用指定环境运行脚本
+scripts\run_with_env.bat your_env_name script.py
 ```
 
-### 2. 运行 Python 脚本
+**Linux/Mac 用户：**
+```bash
+# 列出环境
+conda env list
 
-```batch
-# 使用指定环境运行
-scripts\run_with_env.bat my_env my_script.py
+# 激活环境
+conda activate your_env_name
 
-# 或直接使用命令
-conda run -n my_env python my_script.py
+# 或直接运行（无需激活）
+conda run -n your_env_name python script.py
+```
+
+### 2. 输出文件管理
+
+建立规范的输出管理体系：
+
+```python
+import os
+from datetime import datetime
+
+def get_output_path(subdir, name, ext):
+    """生成标准输出文件路径"""
+    output_dir = os.path.join('output', subdir)
+    os.makedirs(output_dir, exist_ok=True)
+
+    timestamp = datetime.now().strftime('%y%m%d%H%M')
+    filename = f"{name}.{ext}"
+    filepath = os.path.join(output_dir, filename)
+
+    return filepath
+
+# 使用示例
+params = {'lr': 0.001, 'batch_size': 32, 'epochs': 100}
+param_str = f"lr{params['lr']}_bs{params['batch_size']}_e{params['epochs']}"
+timestamp = datetime.now().strftime('%y%m%d%H%M')
+
+# 保存模型
+model_path = get_output_path('models', f"{timestamp}_{param_str}_weights", 'pth')
+logger.info(f"[SAVE] 模型文件: {model_path}")
 ```
 
 ### 3. 日志配置（Loguru）
@@ -59,142 +98,179 @@ conda run -n my_env python my_script.py
 from loguru import logger
 import sys
 
-# 简单配置
+# 移除默认输出
 logger.remove()
-logger.add(sys.stdout, level="INFO")
-logger.add("output/logs/{time:YYMMDD}_app.log", level="DEBUG")
+
+# 配置控制台输出
+logger.add(
+    sys.stdout,
+    format="<green>{time:HH:mm:ss}</green> | <level>{level: <8}</level> | <level>{message}</level>",
+    level="INFO"
+)
+
+# 配置文件输出
+logger.add(
+    "output/logs/{time:YYMMDD}_app.log",
+    rotation="10 MB",
+    format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {message}",
+    level="DEBUG"
+)
 
 # 使用
-logger.info("程序开始")
+logger.info("程序开始运行")
+logger.debug(f"当前 Python 版本: {sys.version}")
+logger.error("发生错误")
+
+# 异常自动包含堆栈
+try:
+    risky_operation()
+except Exception:
+    logger.exception("操作失败")
 ```
 
-### 4. Matplotlib 示例
+### 4. Matplotlib 可视化
 
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
 
+# 设置 matplotlib 参数
+plt.rcParams['mathtext.fontset'] = 'cm'
+plt.rcParams['font.family'] = 'serif'
+
+# 创建图表
+fig, ax = plt.subplots(figsize=(8, 6))
+
+# LaTeX 公式标签
+ax.set_xlabel(r'$\mathbf{Time\ (t)}$', fontsize=12)
+ax.set_ylabel(r'$\mathbf{Berry\ Phase\ (\pi\ units)}$')
+
+# 添加文本
+ax.text(0.5, 0.5,
+        r'$\gamma(t) = \frac{|\langle m|\partial_t H|n\rangle|}{|E_m - E_n|^2}$',
+        ha='center', va='center', transform=ax.transAxes)
+
 # 保存图表（遵循输出规范）
-from datetime import datetime
-import os
-
-def save_figure(description, params=None):
-    timestamp = datetime.now().strftime('%y%m%d%H%M')
-    if params:
-        param_str = "_".join(f"{k}{v}" for k, v in params.items())
-        filename = f"{timestamp}_{param_str}_{description}.png"
-    else:
-        filename = f"{timestamp}_{description}.png"
-
-    os.makedirs('output/figures', exist_ok=True)
-    filepath = os.path.join('output/figures', filename)
-    plt.savefig(filepath, dpi=300)
-    print(f"图表已保存: {filepath}")
-    return filepath
-
-# 使用
-params = {'lr': 0.001, 'bs': 32}
-save_figure('loss_curve', params)
+filepath = f"output/figures/{timestamp}_{param_str}_berry_phase.png"
+plt.savefig(filepath, dpi=300, bbox_inches='tight')
+logger.info(f"[SAVE] 图表: {filepath}")
 ```
 
 ## 📋 核心规范
 
-### 输出文件管理规范 ⭐
-遵循 `output_standards.md` 建立的完整输出管理体系：
-- **文件命名格式**：`{时间戳}_{参数组}_{描述}.{扩展名}`
+### 1. 环境管理
+- **原则**：始终在运行 Python 代码前检查并使用正确的 conda 环境
+- **推荐**：优先使用 `conda run -n env` 或提供的脚本
+- **一致性**：确保团队成员使用相同的 conda 环境
+
+### 2. 输出文件管理 ⭐
+遵循统一的命名规范和目录结构：
+- **命名格式**：`{时间戳}_{参数组}_{描述}.{扩展名}`
 - **时间戳**：`YYMMDDHHMM`（简化格式）
-- **参数组**：`lr0.001_bs32_e100`（关键参数）
 - **目录结构**：`output/{logs,figures,models,data,temp}/`
-- **日志记录**：每个输出文件都要在日志中记录
-- **示例**：`241121_lr0.001_bs32_loss.png`
+- **日志记录**：每个输出文件都要记录到日志
 
-### 日志记录要点
-- 使用 Loguru 作为默认日志系统
-- 记录关键参数（特别是数值误差相关）
-- 记录所有输出文件路径
-- 使用适当的日志级别
+### 3. 可视化规范
+- **LaTeX 公式**：使用 `r'$\latex'` 格式
+- **文本处理**：使用英文标签避免编码问题
+- **3D 图形**：使用 `text2D` 添加 2D 注释
+- **矩阵显示**：使用 Unicode 字符对齐
 
-### Matplotlib 规范
-- 使用 LaTeX 公式：`r'$\formula$'`
-- 矩阵显示使用 Unicode 字符对齐
-- 3D 图使用 `text2D` 添加注释
-- 使用英文标签避免编码问题
+### 4. 日志记录
+- **默认系统**：使用 Loguru 作为日志系统
+- **记录内容**：关键参数、计算耗时、输出文件路径
+- **日志级别**：INFO（一般信息）、DEBUG（调试）、ERROR（错误）
+
+### 5. 数值误差分析
+- **容限设置**：根据实际需求设置 rtol 和 atol
+- **误差评估**：计算绝对误差、相对误差、RMSE 等
+- **结果记录**：在日志中记录误差分析结果
 
 ## 🔧 实用工具
 
-### Conda 环境管理
+### Conda 环境管理速查
 
 ```bash
-# 列出所有环境
+# 创建环境
+conda create -n science_env python=3.9 numpy scipy matplotlib -y
+
+# 查看环境列表
 conda env list
 
-# 创建新环境
-conda create -n science_env python=3.9 numpy scipy matplotlib -y
+# 激活环境
+conda activate science_env
 
 # 直接运行（无需激活）
 conda run -n science_env python script.py
+
+# 导出环境
+conda env export > environment.yml
+
+# 从文件创建环境
+conda env create -f environment.yml
 ```
 
-### LaTeX 数学符号
+### LaTeX 数学符号速查
 
-常用符号速查：
-- 希腊字母：`\alpha, \beta, \gamma`
-- 运算符：`\times, \div, \pm`
-- 集合：`\in, \subset, \cup, \cap`
-- 箭头：`\rightarrow, \Leftarrow`
+| 类型 | 符号 | LaTeX |
+|------|------|-------|
+| 希腊字母 | α | `\alpha` |
+| 希腊字母 | β | `\beta` |
+| 希腊字母 | γ | `\gamma` |
+| 运算符 | × | `\times` |
+| 运算符 | ± | `\pm` |
+| 关系 | ≤ | `\leq` |
+| 关系 | ≥ | `\geq` |
+| 集合 | ∈ | `\in` |
+| 箭头 | → | `\rightarrow` |
 
-矩阵对齐（推荐）：
-```python
-matrix_text = 'H(t) = ⎡ αt   V ⎤\n' + \
-              '       ⎣ V  -αt ⎦'
-plt.text(0.5, 0.5, matrix_text, fontfamily='monospace')
-```
+## 📚 详细文档
 
-## 📚 文档说明
-
-| 文档 | 描述 | 适用场景 |
-|------|------|----------|
-| [SKILL.md](SKILL.md) | Claude Skill 主文档 | Claude AI 使用指南 |
-| [conda_commands.md](references/conda_commands.md) | Conda 命令大全 | 环境管理参考 |
-| [matplotlib_examples.md](references/matplotlib_examples.md) | 绘图示例代码 | 科学可视化参考 |
+| 文档 | 描述 | 用途 |
+|------|------|------|
+| [SKILL.md](SKILL.md) | Claude Skill 完整指南 | AI 使用说明 |
+| [output_standards.md](references/output_standards.md) | 输出文件详细规范 | 文件管理标准 |
 | [loguru_guide.md](references/loguru_guide.md) | Loguru 使用指南 | 日志系统配置 |
-| [output_standards.md](references/output_standards.md) | 输出规范指南 | 文件命名标准 |
+| [matplotlib_examples.md](references/matplotlib_examples.md) | 绘图示例代码 | 可视化参考 |
+| [latex_symbols.md](references/latex_symbols.md) | LaTeX 符号大全 | 数学公式编写 |
+| [conda_commands.md](references/conda_commands.md) | Conda 命令参考 | 环境管理 |
 
-## 🏆 代码审查清单
+## ✅ 代码审查清单
 
-使用前请确保：
+使用前请确认：
 
 - [ ] 使用 `check_env.bat` 确认了 conda 环境
 - [ ] 输出文件遵循 `output_standards.md` 的命名规范
 - [ ] 日志中记录了所有输出文件的路径
 - [ ] matplotlib 使用了正确的 LaTeX 公式格式
-- [ ] 矩阵显示使用了 Unicode 字符对齐
+- [ ] 避免了复杂的 LaTeX 环境
 - [ ] 使用了英文标签避免编码问题
 - [ ] 3D 图中使用 `text2D` 而非 `text`
+- [ ] 矩阵显示使用了多行字符串和等宽字体
+- [ ] 设置了适当的日志级别
+- [ ] 进行了数值误差分析（如适用）
 
 ## ❓ 常见问题
 
-### Q: 如何在不同操作系统上使用？
-A:
-- Windows：使用提供的 `.bat` 脚本
-- Linux/Mac：使用参考文档中的 bash 命令
-
 ### Q: 必须使用 Loguru 吗？
-A: 不是，但 Loguru 是推荐的默认选择。传统 logging 仍然支持。
+A: 不是强制要求，但 Loguru 是推荐的默认选择，提供更简洁的 API。
 
-### Q: 如何贡献？
-A: 欢迎 Issue 和 Pull Request！
+### Q: 如何处理参数过多的情况？
+A: 使用简化版参数名或只保留关键参数，详细参数在日志中说明。
+
+### Q: 时间戳精度如何选择？
+A: 一般到分钟即可，同一时间多次运行可添加分钟序列号。
 
 ### Q: 这与 PEP 8 的关系？
-A: 本规范专注于科学计算的特定需求，是 PEP 8 的补充而非替代。
+A: 本规范专注于科学计算的特殊需求，是 PEP 8 的补充。
 
 ## 🤝 贡献指南
 
 1. Fork 本仓库
-2. 创建特性分支：`git checkout -b feature/AmazingFeature`
-3. 提交更改：`git commit -m 'Add some AmazingFeature'`
-4. 推送分支：`git push origin feature/AmazingFeature`
-5. 提交 Pull Request
+2. 创建特性分支：`git checkout -b feature/new-guideline`
+3. 提交更改：`git commit -m "add: new guideline for xxx"`
+4. 推送分支：`git push origin feature/new-guideline`
+5. 创建 Pull Request
 
 ## 📄 许可证
 
@@ -202,16 +278,12 @@ A: 本规范专注于科学计算的特定需求，是 PEP 8 的补充而非替�
 
 ## 🙏 致谢
 
-- [Conda](https://docs.conda.io/) - 环境管理
+- [Conda](https://docs.conda.io/) - 包管理和环境管理
 - [Matplotlib](https://matplotlib.org/) - 数据可视化
 - [Loguru](https://github.com/Delgan/loguru) - 日志记录
-- [NumPy](https://numpy.org/) - 数值计算
-
-## 📞 联系方式
-
-- 项目主页：[https://github.com/yourusername/python-coding-standard](https://github.com/yourusername/python-coding-standard)
-- Issues：[https://github.com/yourusername/python-coding-standard/issues](https://github.com/yourusername/python-coding-standard/issues)
+- [NumPy](https://numpy.org/) - 数值计算基础
+- [SciPy](https://scipy.org/) - 科学计算库
 
 ---
 
-⭐ 如果这个项目对你有帮助，请给个 Star！
+⭐ 如果这个项目对你的科研工作有帮助，请给个 Star！
