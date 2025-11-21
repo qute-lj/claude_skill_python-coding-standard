@@ -1,6 +1,6 @@
 ---
 name: python-coding-standard
-description: This skill provides comprehensive Python coding standards and best practices for scientific computing, including conda environment management, matplotlib visualization best practices, logging standards, and numerical error analysis guidelines. Use this skill when writing Python code that requires professional standards for scientific visualization, proper environment setup, robust logging, or numerical accuracy analysis.
+description: This skill provides comprehensive Python coding standards and best practices for scientific computing, including conda environment management, matplotlib visualization best practices, logging standards, and numerical error analysis guidelines. **IMPORTANT: This skill ONLY triggers for Python-related tasks.** Use this skill when writing Python code that requires professional standards for scientific visualization, proper environment setup, robust logging, or numerical accuracy analysis. Do not use for other programming languages or general Python questions that don't require scientific computing standards.
 ---
 
 # Python 代码书写规范
@@ -9,12 +9,20 @@ description: This skill provides comprehensive Python coding standards and best 
 
 ## 何时使用此技能
 
+**重要提示：此技能仅用于 Python 相关任务！**
+
 当用户需要：
 - 设置和管理 Python conda 环境
 - 创建专业的科学可视化图表
 - 实现规范的日志记录系统
 - 分析和控制数值计算误差
 - 编写符合科研标准的 Python 代码
+
+**不适用于：**
+- 其他编程语言（Java, C++, JavaScript 等）
+- 不涉及科学计算的一般 Python 问题
+- 简单的 Python 脚本（如 Hello World）
+- Python 基础语法教学
 
 ## 核心使用指南
 
@@ -274,16 +282,45 @@ def log_error_analysis(error_info, is_acceptable):
 
 ## 使用 bundled 资源
 
-### references/
+### 重要：必须阅读的 References 文件
 
-- `conda_commands.md` - Conda 环境管理 Bash 命令
-- `matplotlib_examples.md` - Matplotlib 最佳实践示例代码
-- `logging_best_practices.md` - Logging 最佳实践指南（包含内容选择提示）
-- `loguru_guide.md` - **Loguru 日志库详细指南**（默认日志系统）
-- `latex_symbols.md` - LaTeX 数学符号速查表（包含矩阵对齐指南）
-- `output_standards.md` - **输出文件规范指南**（文件命名、目录结构、日志记录）
+**当执行特定任务时，Claude 必须主动读取以下 references 文件：**
+
+- `conda_commands.md` - **必须阅读**：当涉及环境管理、conda 命令、运行 Python 代码时
+- `output_standards.md` - **必须阅读**：当需要保存任何输出文件（图表、数据、模型、日志）时
+- `matplotlib_examples.md` - **必须阅读**：当需要创建任何可视化图表时
+- `logging_best_practices.md` - **必须阅读**：当需要设置日志系统或记录信息时
+- `loguru_guide.md` - **必须阅读**：当使用 Loguru 日志库时（默认推荐）
+- `latex_symbols.md` - **必须阅读**：当需要在 matplotlib 中使用 LaTeX 公式时
+
+### 使用规则
+
+1. **任务触发读取**：根据任务类型自动读取对应的 references 文件
+2. **优先级**：references 中的规范优先于通用知识
+3. **完整性**：必须严格遵循 references 中的标准和示例
 
 **重要说明**：本技能不再提供 bat 脚本文件，所有环境管理操作请直接使用 conda 命令或参考 `references/conda_commands.md` 中的详细说明。
+
+## Claude 使用工作流程
+
+**当使用此技能时，Claude 必须按以下步骤执行：**
+
+### 步骤 1：任务分析
+确定任务类型，识别需要哪些 references 文件：
+- 环境管理 → `conda_commands.md`
+- 文件输出 → `output_standards.md`
+- 图表制作 → `matplotlib_examples.md`
+- 日志设置 → `logging_best_practices.md` + `loguru_guide.md`
+- LaTeX 公式 → `latex_symbols.md`
+
+### 步骤 2：读取 References
+根据任务类型，**主动**读取相应的 references 文件，不得跳过。
+
+### 步骤 3：遵循标准
+严格按照 references 中的规范和示例执行任务，优先级高于通用知识。
+
+### 步骤 4：检查清单
+使用下面的代码审查清单确保所有标准都被遵循。
 
 ## 实施步骤
 
