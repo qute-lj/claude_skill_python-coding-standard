@@ -24,24 +24,17 @@ description: This skill provides comprehensive Python coding standards and best 
 
 **原则**：始终在运行 Python 代码前检查并使用正确的 conda 环境
 
-**推荐方法**：使用 bat 脚本（Windows）或 bash 命令
+**推荐方法**：使用 conda 命令行工具
 
 1. **快速环境检查**：
-   ```batch
-   # Windows
-   scripts\check_env.bat
-
-   # 或使用 bash
+   ```bash
    conda env list
    conda info
    ```
 
 2. **激活并运行 Python**：
-   ```batch
-   # 使用提供的脚本
-   scripts\run_with_env.bat your_env_name your_script.py
-
-   # 或手动操作
+   ```bash
+   # 手动操作
    conda activate your_env_name
    python your_script.py
    ```
@@ -86,7 +79,20 @@ description: This skill provides comprehensive Python coding standards and best 
 
 #### LaTeX 公式使用规范
 
-**基本原则**：使用 `r'$\latex'` 格式，避免复杂环境
+**核心原则**：不是所有字符都需要 LaTeX 格式，只有适合用 LaTeX 格式的公式和适宜加粗等的字体才需要使用
+
+**LaTeX 适用场景**：
+- 数学公式和物理量：`r'$E = mc^2$'`
+- 特殊符号：`r'$\alpha, \beta, \gamma$'`
+- 需要加粗的变量名：`r'$\mathbf{Time\ (t)}$'`
+- 希腊字母和数学符号
+
+**普通文本适用场景**：
+- 简单的英文单词：`'Time'`、`'Energy'`
+- 一般描述性文本
+- 数值标签：`'Sample 1'`、`'Group A'`
+
+**英文标签规范**：所有 matplotlib 的 label、title、legend 等一律使用英文，避免中文编码问题
 
 更多matplotlib示例请参考 `references/matplotlib_examples.md`。
 
@@ -99,14 +105,22 @@ from mpl_toolkits.mplot3d import Axes3D
 plt.rcParams['mathtext.fontset'] = 'cm'
 plt.rcParams['font.family'] = 'serif'
 
-# ✅ 简单公式
-ax.set_xlabel(r'$\mathbf{Time\ (t)}$', fontsize=12)
-ax.set_ylabel(r'$\mathbf{Berry\ Phase\ (\pi\ units)}$')
+# ✅ 正确的使用方式：LaTeX + 普通文本结合
+ax.set_xlabel(r'$\mathbf{Time\ (t)}$', fontsize=12)  # 变量名用 LaTeX 加粗
+ax.set_ylabel(r'$\mathbf{Berry\ Phase\ (\pi\ units)}$')  # 复合概念用 LaTeX
+ax.set_title('Berry Phase Evolution')  # 标题用普通英文
 
-# ✅ 物理量定义
+# ✅ 物理量定义（必须用 LaTeX）
 ax.text(0.5, 0.5,
         r'$\gamma(t) = \frac{|\langle m|\partial_t H|n\rangle|}{|E_m - E_n|^2}$',
         ha='center', va='center')
+
+# ✅ 图例使用英文
+ax.legend(['Ground State', 'Excited State'], loc='best')
+
+# ❌ 避免的使用方式
+# ax.set_xlabel('时间')  # 不要用中文
+# ax.text(0.5, 0.5, r'$\text{Simple Text}$')  # 简单文本不需要 LaTeX
 ```
 
 LaTeX数学符号速查请参考 `references/latex_symbols.md`。
@@ -260,20 +274,6 @@ def log_error_analysis(error_info, is_acceptable):
 
 ## 使用 bundled 资源
 
-### scripts/
-
-- `check_env.bat` - Conda 环境检查工具（Windows）
-- `run_with_env.bat` - 使用指定环境运行 Python 脚本（Windows）
-
-使用示例：
-```batch
-# 检查环境
-scripts\check_env.bat
-
-# 运行脚本
-scripts\run_with_env.bat my_env main.py
-```
-
 ### references/
 
 - `conda_commands.md` - Conda 环境管理 Bash 命令
@@ -283,34 +283,38 @@ scripts\run_with_env.bat my_env main.py
 - `latex_symbols.md` - LaTeX 数学符号速查表（包含矩阵对齐指南）
 - `output_standards.md` - **输出文件规范指南**（文件命名、目录结构、日志记录）
 
+**重要说明**：本技能不再提供 bat 脚本文件，所有环境管理操作请直接使用 conda 命令或参考 `references/conda_commands.md` 中的详细说明。
+
 ## 实施步骤
 
-1. **运行前检查**：使用 `scripts/check_env.bat` 或 `conda env list` 确认环境
-2. **环境激活**：使用 `scripts/run_with_env.bat` 或 `conda activate`
+1. **运行前检查**：使用 `conda env list` 确认环境
+2. **环境激活**：使用 `conda activate` 或 `conda run -n env`
 3. **导入模块**：导入必要的标准库和第三方库
 4. **设置日志**：参考 `logging_best_practices.md` 配置日志系统
 5. **编写代码**：遵循 `matplotlib_examples.md` 和 `latex_symbols.md` 中的规范
-6. **可视化**：使用 matplotlib 最佳实践创建图表
+6. **可视化**：使用 matplotlib 最佳实践创建图表，所有标签用英文
 7. **记录结果**：通过日志记录所有重要信息
 
 ## 代码审查清单
 
-- [ ] 使用 `check_env.bat` 确认了 conda 环境
-- [ ] matplotlib 使用了正确的 LaTeX 公式格式
+- [ ] 使用 `conda env list` 确认了 conda 环境
+- [ ] matplotlib 正确使用 LaTeX 格式（仅用于公式和特殊符号）
+- [ ] 所有 label、title、legend 等都使用英文
+- [ ] 避免了对简单文本使用 LaTeX 格式
 - [ ] 避免了复杂的 LaTeX 环境，使用 Unicode 字符对齐矩阵
 - [ ] 设置了适当的日志级别，参考了 `loguru_guide.md`
 - [ ] **输出文件遵循 `output_standards.md` 的命名规范**
 - [ ] **日志中记录了所有输出文件的路径**
-- [ ] 使用了英文标签避免编码问题
 - [ ] 在 3D 图中使用 text2D 而非 text
 - [ ] 矩阵显示使用了多行字符串和等宽字体
 - [ ] 公式使用定义式而非具体数值
 
 ## 注意事项
 
-- **环境管理**：优先使用 `conda run -n env` 或提供的 bat 脚本
+- **环境管理**：优先使用 `conda run -n env` 或 conda 命令行工具，参考 `references/conda_commands.md`
 - **环境一致性**：确保团队成员使用相同的 conda 环境
-- **LaTeX 支持**：复杂公式建议使用 Unicode 字符对齐
+- **matplotlib 标签**：所有标签、标题、图例必须使用英文
+- **LaTeX 使用**：只对数学公式、希腊字母、需要加粗的变量名使用 LaTeX，简单文本使用普通字符串
 - **日志管理**：使用前参考 `loguru_guide.md` 配置日志系统
 - **输出管理**：所有输出文件到 `output/` 目录，遵循统一命名规范
 - **代码复用**：从 `references/` 复制所需代码片段
