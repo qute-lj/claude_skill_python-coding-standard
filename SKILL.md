@@ -7,6 +7,12 @@ description: This skill provides comprehensive Python coding standards and best 
 
 本技能提供科学计算 Python 代码的全面编码标准和最佳实践，包括环境管理、可视化规范、日志记录和数值误差分析。
 
+## ⚠️ 最重要的规则
+
+**严格遵循输出文件命名规范是使用本技能的前提！** 所有输出文件（包括图表、数据、模型、日志）必须按照 `output_standards.md` 中的规范命名。**任何偏离命名规范的行为都将导致项目混乱、结果无法追溯、严重影响科研工作的可重现性。**
+
+记住：**命名不规范 = 无结果！**
+
 ## 何时使用此技能
 
 **重要提示：此技能仅用于 Python 相关任务！**
@@ -58,6 +64,8 @@ description: This skill provides comprehensive Python coding standards and best 
 
 **原则**：所有输出文件必须遵循统一的命名规范和目录结构
 
+**⚠️ 严禁违反命名规则！** 在保存任何文件之前，必须严格按照以下规范操作：
+
 参考 `references/output_standards.md` 建立完整的输出管理体系：
 
 1. **文件命名格式**：`{时间戳}_{参数组}_{描述}.{扩展名}`
@@ -75,11 +83,17 @@ description: This skill provides comprehensive Python coding standards and best 
    └── temp/      # 临时文件
    ```
 
-3. **日志记录**：每个输出文件都要在日志中记录
+3. **日志记录**：每个输出文件都要在日志中记录（**文件路径必须符合命名规范**）
    ```python
-   logger.info(f"[SAVE] 图表: {filepath}")
-   logger.info(f"[SAVE] 模型: {model_path}")
+   # ✅ 正确的日志记录方式
+   logger.info(f"[SAVE] 图表: {filepath}")  # filepath 必须符合命名规范
+   logger.info(f"[SAVE] 模型: {model_path}")  # model_path 必须符合命名规范
+
+   # ❌ 错误：使用不符合规范的文件名
+   logger.info(f"[SAVE] 图表: plot.png")  # 禁止！缺少时间戳和参数
    ```
+
+**记住：任何保存操作都必须使用标准命名函数！** 参考 `references/output_standards.md` 中的代码模板。
 
 完整的输出管理规范请参考 `references/output_standards.md`。
 
@@ -129,6 +143,18 @@ ax.legend(['Ground State', 'Excited State'], loc='best')
 # ❌ 避免的使用方式
 # ax.set_xlabel('时间')  # 不要用中文
 # ax.text(0.5, 0.5, r'$\text{Simple Text}$')  # 简单文本不需要 LaTeX
+```
+
+**⚠️ 重要：保存图表时必须使用标准命名！**
+```python
+# ✅ 正确的保存方式
+from references.output_standards import save_figure
+filepath, title_text = save_figure('berry_phase', params)
+plt.savefig(filepath, dpi=300, bbox_inches='tight')
+logger.info(f"[SAVE] 图表: {filepath}")
+
+# ❌ 错误的保存方式
+plt.savefig('plot.png')  # 禁止！不符合命名规范
 ```
 
 LaTeX数学符号速查请参考 `references/latex_symbols.md`。
@@ -336,17 +362,26 @@ def log_error_analysis(error_info, is_acceptable):
 
 ## 代码审查清单
 
+### 🔴 关键检查项（违反即不合格）
+
+- [ ] **✅ 所有输出文件严格遵循 `output_standards.md` 的命名规范**
+- [ ] **✅ 日志中记录了所有输出文件的完整路径**
+- [ ] **✅ 使用了标准命名函数生成文件路径**
+
+### 其他检查项
+
 - [ ] 使用 `conda env list` 确认了 conda 环境
 - [ ] matplotlib 正确使用 LaTeX 格式（仅用于公式和特殊符号）
 - [ ] 所有 label、title、legend 等都使用英文
 - [ ] 避免了对简单文本使用 LaTeX 格式
 - [ ] 避免了复杂的 LaTeX 环境，使用 Unicode 字符对齐矩阵
 - [ ] 设置了适当的日志级别，参考了 `loguru_guide.md`
-- [ ] **输出文件遵循 `output_standards.md` 的命名规范**
-- [ ] **日志中记录了所有输出文件的路径**
 - [ ] 在 3D 图中使用 text2D 而非 text
 - [ ] 矩阵显示使用了多行字符串和等宽字体
 - [ ] 公式使用定义式而非具体数值
+- [ ] 仅在 Python 相关任务中使用此技能
+
+**⚠️ 警告：只要有一个关键检查项未通过，整个代码都不符合标准！**
 
 ## 注意事项
 
@@ -355,5 +390,14 @@ def log_error_analysis(error_info, is_acceptable):
 - **matplotlib 标签**：所有标签、标题、图例必须使用英文
 - **LaTeX 使用**：只对数学公式、希腊字母、需要加粗的变量名使用 LaTeX，简单文本使用普通字符串
 - **日志管理**：使用前参考 `loguru_guide.md` 配置日志系统
-- **输出管理**：所有输出文件到 `output/` 目录，遵循统一命名规范
+- **🔴 输出管理**：所有输出文件到 `output/` 目录，**必须遵循统一命名规范，无任何例外！**
 - **代码复用**：从 `references/` 复制所需代码片段
+
+### 🚨 最后的警告
+
+**文件命名规范不是建议，是命令！**
+- 不遵循命名规范 = 没有通过代码审查
+- 不遵循命名规范 = 结果无效，需要重做
+- 不遵循命名规范 = 影响整个项目的可重现性
+
+**不要抱有侥幸心理，严格遵守命名规则！**
