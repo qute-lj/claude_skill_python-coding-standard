@@ -1,5 +1,7 @@
 # Python 科学计算代码书写规范
 
+> 🎯 专为科研工作者打造的专业 Python 编码标准，Claude Skill 认证
+
 [![Skill Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/qute-lj/python-coding-standard)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -31,7 +33,8 @@ python-coding-standard/
 │   ├── logging_best_practices.md # 日志最佳实践指南
 │   ├── loguru_guide.md        # Loguru 日志库详细指南
 │   ├── latex_symbols.md       # LaTeX 数学符号速查表
-│   └── output_standards.md    # 输出文件规范指南
+│   ├── output_standards.md    # 输出文件规范指南
+│   └── type_annotations_guide.md # Python 类型注解科学计算指南
 ├── scripts/                    # 脚本目录（已清空，不再提供 bat 脚本）
 ├── output/                     # 输出目录（按规范生成）
 │   ├── logs/                   # 日志文件
@@ -183,7 +186,13 @@ logger.info(f"[SAVE] 图表: {filepath}")
 - **记录内容**：关键参数、计算耗时、输出文件路径
 - **日志级别**：INFO（一般信息）、DEBUG（调试）、ERROR（错误）
 
-### 5. 数值误差分析
+### 5. 类型注解
+- **明确类型**：使用 Type Annotations 提高代码可读性
+- **数值精度**：明确区分 float32/float64、int32/int64
+- **科学计算类型**：使用 NewType 创建物理量类型
+- **参考指南**：详细规范请参考 `type_annotations_guide.md`
+
+### 6. 数值误差分析
 - **容限设置**：根据实际需求设置 rtol 和 atol
 - **误差评估**：计算绝对误差、相对误差、RMSE 等
 - **结果记录**：在日志中记录误差分析结果
@@ -236,6 +245,7 @@ conda env create -f environment.yml
 | [matplotlib_examples.md](references/matplotlib_examples.md) | 绘图示例代码 | 可视化参考 |
 | [latex_symbols.md](references/latex_symbols.md) | LaTeX 符号大全 | 数学公式编写 |
 | [conda_commands.md](references/conda_commands.md) | Conda 命令参考 | 环境管理 |
+| [type_annotations_guide.md](references/type_annotations_guide.md) | 类型注解科学计算指南 | 代码类型规范 |
 
 ## ✅ 代码审查清单
 

@@ -292,6 +292,7 @@ def log_error_analysis(error_info, is_acceptable):
 - `logging_best_practices.md` - **必须阅读**：当需要设置日志系统或记录信息时
 - `loguru_guide.md` - **必须阅读**：当使用 Loguru 日志库时（默认推荐）
 - `latex_symbols.md` - **必须阅读**：当需要在 matplotlib 中使用 LaTeX 公式时
+- `type_annotations_guide.md` - **必须阅读**：当编写复杂的 Python 函数、类或涉及数值精度控制时
 
 ### 使用规则
 
@@ -312,6 +313,7 @@ def log_error_analysis(error_info, is_acceptable):
 - 图表制作 → `matplotlib_examples.md`
 - 日志设置 → `logging_best_practices.md` + `loguru_guide.md`
 - LaTeX 公式 → `latex_symbols.md`
+- 类型注解 → `type_annotations_guide.md`
 
 ### 步骤 2：读取 References
 根据任务类型，**主动**读取相应的 references 文件，不得跳过。
