@@ -379,20 +379,84 @@ def train_model(
 
 ### 1. 使用 mypy 进行静态检查
 
-```bash
-# 安装
-pip install mypy numpy-stubs
+#### 安装
 
-# 运行类型检查
+```bash
+# 基础安装
+pip install mypy
+
+# 或使用 conda
+conda install mypy -c conda-forge
+
+# 科学计算支持（推荐）
+pip install numpy-stubs pandas-stubs types-scipy types-matplotlib
+
+# 验证安装
+mypy --version
+```
+
+#### 使用
+
+```bash
+# 基本使用
+mypy your_script.py
+
+# 严格模式（推荐用于新项目）
 mypy your_script.py --strict
 
-# 配置文件 mypy.ini
+# 检查整个包
+mypy your_package/
+
+# 显示详细的错误信息
+mypy your_script.py --show-error-codes
+
+# 配置文件
+mypy your_script.py --config-file mypy.ini
+```
+
+#### 配置文件 (mypy.ini)
+
+```ini
 [mypy]
 python_version = 3.9
 strict = True
 warn_return_any = True
 warn_unused_configs = True
 disallow_untyped_defs = True
+disallow_incomplete_defs = True
+check_untyped_defs = True
+disallow_untyped_decorators = True
+no_implicit_optional = True
+warn_redundant_casts = True
+warn_unused_ignores = True
+warn_no_return = True
+warn_unreachable = True
+strict_equality = True
+
+# 特定模块配置
+[mypy-numpy.*]
+ignore_missing_imports = True
+
+[mypy-matplotlib.*]
+ignore_missing_imports = True
+
+[mypy-scipy.*]
+ignore_missing_imports = True
+```
+
+#### 常见问题
+
+```bash
+# 如果遇到 "cannot import implementation" 错误
+pip install --upgrade mypy
+
+# 如果 NumPy 类型检查报错，确保安装了 numpy-stubs
+pip install numpy-stubs
+
+# 对于某些第三方库，可以忽略缺失的存根
+# 在 mypy.ini 中添加：
+[mypy-third_party_library.*]
+ignore_missing_imports = True
 ```
 
 ### 2. 使用 VS Code 智能提示
