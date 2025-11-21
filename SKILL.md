@@ -85,12 +85,14 @@ description: This skill provides comprehensive Python coding standards and best 
 
 3. **日志记录**：每个输出文件都要在日志中记录（**文件路径必须符合命名规范**）
    ```python
-   # ✅ 正确的日志记录方式
-   logger.info(f"[SAVE] 图表: {filepath}")  # filepath 必须符合命名规范
-   logger.info(f"[SAVE] 模型: {model_path}")  # model_path 必须符合命名规范
+   # ✅ 正确的日志记录方式（日志内容可用中文）
+   logger.info(f"[保存] 图表: {filepath}")  # filepath 必须符合命名规范
+   logger.info(f"[保存] 模型: {model_path}")  # model_path 必须符合命名规范
+   logger.info(f"[开始] 训练过程")
+   logger.info(f"[完成] 训练，最终损失: {final_loss:.6f}")
 
    # ❌ 错误：使用不符合规范的文件名
-   logger.info(f"[SAVE] 图表: plot.png")  # 禁止！缺少时间戳和参数
+   logger.info(f"[保存] 图表: plot.png")  # 禁止！缺少时间戳和参数
    ```
 
 **记住：任何保存操作都必须使用标准命名函数！** 参考 `references/output_standards.md` 中的代码模板。
@@ -388,6 +390,7 @@ def log_error_analysis(error_info, is_acceptable):
 - **环境管理**：优先使用 `conda run -n env` 或 conda 命令行工具，参考 `references/conda_commands.md`
 - **环境一致性**：确保团队成员使用相同的 conda 环境
 - **matplotlib 标签**：所有标签、标题、图例必须使用英文
+- **日志语言**：日志消息可以使用中文，便于理解和调试
 - **LaTeX 使用**：只对数学公式、希腊字母、需要加粗的变量名使用 LaTeX，简单文本使用普通字符串
 - **日志管理**：使用前参考 `loguru_guide.md` 配置日志系统
 - **🔴 输出管理**：所有输出文件到 `output/` 目录，**必须遵循统一命名规范，无任何例外！**
