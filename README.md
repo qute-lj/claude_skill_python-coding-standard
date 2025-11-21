@@ -1,3 +1,5 @@
+现在除了点小问题, matplotlib的中文字符和盲目latex与bat文件失效. 
+
 # Python 科学计算代码书写规范
 
 [![Skill Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/qute-lj/python-coding-standard)
