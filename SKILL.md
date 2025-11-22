@@ -1,6 +1,6 @@
 ---
 name: python-coding-standard
-description: This skill provides comprehensive Python coding standards and best practices for scientific computing, including conda environment management, matplotlib visualization best practices, logging standards, and numerical error analysis guidelines. **IMPORTANT: This skill ONLY triggers for Python-related tasks.** Use this skill when writing Python code that requires professional standards for scientific visualization, proper environment setup, robust logging, or numerical accuracy analysis. Do not use for other programming languages or general Python questions that don't require scientific computing standards.
+description: This skill provides comprehensive Python coding standards and best practices for scientific computing, including conda environment management (avoiding conda activate, using conda -n commands), matplotlib visualization best practices, logging standards, and numerical error analysis guidelines. **IMPORTANT: This skill ONLY triggers for Python-related tasks.** Use this skill when writing Python code that requires professional standards for scientific visualization, proper environment setup, robust logging, or numerical accuracy analysis. Do not use for other programming languages or general Python questions that don't require scientific computing standards.
 ---
 
 # Python 代码书写规范
@@ -34,11 +34,16 @@ description: This skill provides comprehensive Python coding standards and best 
 
 ### 1. 环境管理最佳实践
 
-#### 运行前环境检查
+#### ⚠️ 重要：避免使用conda activate
 
-**原则**：始终在运行 Python 代码前检查并使用正确的 conda 环境
+**原则**：始终避免使用 `conda activate`，直接使用 `conda run -n` 和 `conda install -n`
 
-**推荐方法**：使用 conda 命令行工具
+**原因**：
+- `conda activate` 需要预先运行 `conda init`，修改shell配置
+- 可能导致环境冲突和依赖问题
+- 在脚本和自动化中难以管理和重现
+
+**推荐方法**：使用 conda 直接命令
 
 1. **快速环境检查**：
    ```bash
@@ -46,16 +51,18 @@ description: This skill provides comprehensive Python coding standards and best 
    conda info
    ```
 
-2. **激活并运行 Python**：
+2. **直接运行 Python 脚本（无需激活）**：
    ```bash
-   # 手动操作
-   conda activate your_env_name
-   python your_script.py
+   conda run -n your_env_name python your_script.py
    ```
 
-3. **直接运行（无需激活）**：
+3. **在指定环境中安装包**：
    ```bash
-   conda run -n env_name python script.py
+   # 强烈推荐：使用conda安装
+   conda install -n your_env_name numpy matplotlib
+
+   # 仅当conda源中没有时才使用pip
+   conda run -n your_env_name pip install special-package
    ```
 
 详细的环境管理命令请参考 `references/conda_commands.md`。
@@ -355,12 +362,13 @@ def log_error_analysis(error_info, is_acceptable):
 ## 实施步骤
 
 1. **运行前检查**：使用 `conda env list` 确认环境
-2. **环境激活**：使用 `conda activate` 或 `conda run -n env`
-3. **导入模块**：导入必要的标准库和第三方库
-4. **设置日志**：参考 `logging_best_practices.md` 配置日志系统
-5. **编写代码**：遵循 `matplotlib_examples.md` 和 `latex_symbols.md` 中的规范
-6. **可视化**：使用 matplotlib 最佳实践创建图表，所有标签用英文
-7. **记录结果**：通过日志记录所有重要信息
+2. **直接运行**：使用 `conda run -n env_name python script.py`（避免conda activate）
+3. **包管理**：优先使用 `conda install -n env_name`，仅在必要时使用pip
+4. **导入模块**：导入必要的标准库和第三方库
+5. **设置日志**：参考 `logging_best_practices.md` 配置日志系统
+6. **编写代码**：遵循 `matplotlib_examples.md` 和 `latex_symbols.md` 中的规范
+7. **可视化**：使用 matplotlib 最佳实践创建图表，所有标签用英文
+8. **记录结果**：通过日志记录所有重要信息
 
 ## 代码审查清单
 
@@ -373,6 +381,8 @@ def log_error_analysis(error_info, is_acceptable):
 ### 其他检查项
 
 - [ ] 使用 `conda env list` 确认了 conda 环境
+- [ ] **✅ 避免使用 `conda activate`，使用 `conda run -n env_name`**
+- [ ] **✅ 优先使用 `conda install -n env_name` 而非pip**
 - [ ] matplotlib 正确使用 LaTeX 格式（仅用于公式和特殊符号）
 - [ ] 所有 label、title、legend 等都使用英文
 - [ ] 避免了对简单文本使用 LaTeX 格式
@@ -387,8 +397,9 @@ def log_error_analysis(error_info, is_acceptable):
 
 ## 注意事项
 
-- **环境管理**：优先使用 `conda run -n env` 或 conda 命令行工具，参考 `references/conda_commands.md`
-- **环境一致性**：确保团队成员使用相同的 conda 环境
+- **环境管理**：严格避免 `conda activate`，使用 `conda run -n env_name` 和 `conda install -n env_name`
+- **包管理**：强烈优先使用conda安装，仅在conda源中确实没有时才使用pip
+- **环境一致性**：确保团队成员使用相同的 conda 环境和安装方式
 - **matplotlib 标签**：所有标签、标题、图例必须使用英文
 - **日志语言**：日志消息可以使用中文，便于理解和调试
 - **LaTeX 使用**：只对数学公式、希腊字母、需要加粗的变量名使用 LaTeX，简单文本使用普通字符串

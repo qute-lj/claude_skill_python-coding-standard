@@ -26,18 +26,16 @@ conda list -n your_env_name
 conda list -n your_env_name | head -20
 ```
 
-## 环境激活和使用
+## 环境使用（不使用conda activate）
 
-### 1. 激活环境（在终端执行）
-```bash
-# Linux/Mac
-conda activate your_env_name
+### ⚠️ 重要：避免使用conda activate
 
-# Windows (CMD/PowerShell)
-conda activate your_env_name
-```
+**不推荐使用conda activate的原因：**
+- 需要预先运行conda init，修改shell配置
+- 可能导致环境冲突和依赖问题
+- 在脚本中难以管理和重现
 
-### 2. 直接使用指定环境运行 Python 脚本
+### 1. 直接使用指定环境运行 Python 脚本（推荐）
 ```bash
 # 不需要激活环境，直接运行
 conda run -n your_env_name python your_script.py
@@ -47,17 +45,26 @@ conda run -n your_env_name python train.py --epochs 100 --batch-size 32
 
 # 交互式运行
 conda run -n your_env_name python
+
+# 运行Jupyter notebook
+conda run -n your_env_name jupyter notebook
 ```
 
-### 3. 在指定环境中安装包
+### 2. 在指定环境中安装包
 ```bash
-# 安装到指定环境（无需激活）
-conda install -n your_env_name numpy matplotlib
+# 使用conda安装到指定环境（强烈推荐）
+conda install -n your_env_name numpy matplotlib scipy
 
-# 使用 pip
-conda run -n your_env_name pip install some-package
+# 从conda-forge安装（当主频道没有时）
+conda install -n your_env_name -c conda-forge package-name
 
-# 从 requirements.txt 安装
+# 安装特定版本
+conda install -n your_env_name numpy=1.21.0
+
+# ⚠️ 仅当conda源中确实没有时才使用pip
+conda run -n your_env_name pip install some-package-only-in-pip
+
+# 从 requirements.txt 安装（尽量用conda环境文件替代）
 conda run -n your_env_name pip install -r requirements.txt
 ```
 
@@ -116,33 +123,27 @@ conda clean --all -y
 conda update conda -y
 ```
 
-## 快速工作流程
+## 推荐工作流程（仅使用conda run）
 
-### 方案 1：激活后运行
+### 标准 workflow（推荐）
 ```bash
 # 1. 检查环境
 conda env list
 
-# 2. 激活环境
-conda activate my_project_env
-
-# 3. 运行脚本
-python main.py
-
-# 4. 安装新包（如需要）
-conda install new-package
-```
-
-### 方案 2：直接运行（推荐）
-```bash
-# 1. 直接运行脚本
+# 2. 直接运行脚本（无需激活）
 conda run -n my_project_env python main.py
 
-# 2. 安装包
-conda run -n my_project_env pip install new-package
+# 3. 安装新包（优先使用conda -n）
+conda install -n my_project_env new-package
 
-# 3. Jupyter notebook
+# 4. 仅当conda源中没有时才使用pip
+conda run -n my_project_env pip install new-package-only-in-pip
+
+# 5. 运行Jupyter notebook
 conda run -n my_project_env jupyter notebook
+
+# 6. 交互式Python
+conda run -n my_project_env python
 ```
 
 ## 问题排查
@@ -153,39 +154,37 @@ conda run -n my_project_env jupyter notebook
 which conda    # Linux/Mac
 where conda    # Windows
 
-# 如果没有，初始化 conda
-conda init bash
-# 或
-conda init cmd
+# 确保conda已正确安装并可用
+conda --version
 ```
 
-### 2. 如果环境激活失败
+### 2. 环境访问问题
 ```bash
-# 查看 shell 配置
-echo $SHELL
+# 检查环境是否存在
+conda env list
 
-# 重新初始化
-conda init <your-shell>
-# 然后重启终端
+# 如果环境不存在，创建它
+conda create -n env_name python=3.9 -y
 ```
 
 ### 3. 查看 Python 路径
 ```bash
-# 在激活的环境中
-which python    # Linux/Mac
-where python    # Windows
+# 直接查看指定环境的Python路径
+conda run -n env_name which python    # Linux/Mac
+conda run -n env_name where python    # Windows
 
-# 或直接运行
-conda run -n env_name which python
+# 查看Python版本
+conda run -n env_name python --version
 ```
 
 ## 最佳实践
 
-1. **始终指定环境名**：使用 `conda run -n env_name` 而不是依赖激活状态
-2. **项目隔离**：每个项目使用独立环境
-3. **版本锁定**：使用 `environment.yml` 或 `requirements.txt` 记录依赖
-4. **定期清理**：使用 `conda clean --all` 清理缓存
-5. **避免使用 pip 在 conda 环境**：优先使用 `conda install`，除非包不在 conda
+1. **避免conda activate**：始终使用 `conda run -n env_name` 和 `conda install -n env_name`
+2. **明确指定环境**：所有命令都要带 `-n env_name` 参数
+3. **项目隔离**：每个项目使用独立环境
+4. **版本锁定**：使用 `environment.yml` 或 `requirements.txt` 记录依赖
+5. **强烈优先conda安装**：避免使用pip，除非包确实不在conda源中
+6. **定期清理**：使用 `conda clean --all` 清理缓存
 
 ## 示例：完整的项目设置流程
 
@@ -199,7 +198,9 @@ conda create -n my_project python=3.9 numpy scipy matplotlib pandas -y
 # 3. 验证环境
 conda run -n my_project python --version
 
-# 4. 安装项目依赖
+# 4. 安装项目依赖（优先使用conda环境文件）
+conda env update -f environment.yml
+# 或仅在必要时使用pip
 conda run -n my_project pip install -r requirements.txt
 
 # 5. 运行项目
