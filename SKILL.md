@@ -253,7 +253,34 @@ def log_computation_info(func_name, params, result, time_elapsed):
     logger.info(f"计算耗时: {time_elapsed:.4f} 秒")
 ```
 
-### 5. 数值误差分析
+### 5. 类型注解规范（Type Annotations）
+
+**核心原则**：明确数值精度、提高代码可读性、确保科研结果可重现
+
+**何时必须使用类型注解**：
+- 函数参数和返回值（特别是数值计算函数）
+- 复杂数据结构（字典、列表、numpy数组）
+- 类的属性和方法
+- 涉及数值精度的变量（float32 vs float64）
+
+**基本使用示例**：
+```python
+from typing import Union, Optional, List, Dict, Tuple
+from numpy import typing as npt
+import numpy as np
+
+def analyze_data(
+    data: npt.NDArray[np.float64],  # 明确精度类型
+    parameters: Dict[str, float],   # 参数字典
+    threshold: Optional[float] = None
+) -> Tuple[npt.NDArray[np.float64], Dict[str, float]]:
+    """数据处理函数示例"""
+    pass
+```
+
+**重要说明**：详细的类型注解指南和配置请参考 `references/type_annotations_guide.md`
+
+### 6. 数值误差分析
 
 #### 误差评估函数
 
@@ -391,6 +418,9 @@ def log_error_analysis(error_info, is_acceptable):
 - [ ] 在 3D 图中使用 text2D 而非 text
 - [ ] 矩阵显示使用了多行字符串和等宽字体
 - [ ] 公式使用定义式而非具体数值
+- [ ] **✅ 所有函数都使用了适当的类型注解（参考 type_annotations_guide.md）**
+- [ ] **✅ 明确了数值精度类型（float32/float64, complex64/complex128）**
+- [ ] **✅ 复杂数据结构使用了正确的类型注解**
 - [ ] 仅在 Python 相关任务中使用此技能
 
 **⚠️ 警告：只要有一个关键检查项未通过，整个代码都不符合标准！**
