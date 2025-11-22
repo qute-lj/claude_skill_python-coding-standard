@@ -2,7 +2,7 @@
 
 > 🎯 专为科研工作者打造的专业 Python 编码标准，Claude Skill 认证
 
-[![Skill Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/qute-lj/python-coding-standard)
+[![Skill Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/qute-lj/python-coding-standard)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -47,9 +47,9 @@ python-coding-standard/
 
 ## 🚀 快速开始
 
-### 1. 环境检查与激活
+### 1. 环境检查与管理
 
-**推荐使用 conda 命令行工具：**
+**⚠️ 重要：避免使用 conda activate，推荐使用直接命令**
 
 ```bash
 # 列出所有环境
@@ -58,14 +58,19 @@ conda env list
 # 查看环境信息
 conda info
 
-# 激活环境
-conda activate your_env_name
-
-# 直接运行（无需激活，推荐）
+# ✅ 推荐：直接运行（无需激活）
 conda run -n your_env_name python script.py
+
+# ✅ 推荐：在指定环境中安装包
+conda install -n your_env_name numpy matplotlib
+
+# 仅当没有其他选择时才使用 pip
+conda run -n your_env_name pip install special-package
 ```
 
-详细的环境管理命令请参考 `references/conda_commands.md`。
+🔴 **避免使用**：`conda activate your_env_name` - 这可能导致环境冲突和依赖问题
+
+详细的环境管理命令和最佳实践请参考 `references/conda_commands.md`。
 
 ### 2. 输出文件管理
 
@@ -163,7 +168,7 @@ logger.info(f"[SAVE] 图表: {filepath}")
 ## 📋 核心规范
 
 ### 1. 环境管理
-- **原则**：始终在运行 Python 代码前检查并使用正确的 conda 环境
+- **原则**：始终避免使用 `conda activate`，直接使用 `conda run -n` 和 `conda install -n`
 - **推荐**：优先使用 `conda run -n env` 命令进行环境隔离
 - **一致性**：确保团队成员使用相同的 conda 环境
 - **参考**：详细命令请参考 `references/conda_commands.md`
@@ -208,11 +213,11 @@ conda create -n science_env python=3.9 numpy scipy matplotlib -y
 # 查看环境列表
 conda env list
 
-# 激活环境
-conda activate science_env
-
-# 直接运行（无需激活）
+# ✅ 推荐：直接运行（无需激活）
 conda run -n science_env python script.py
+
+# ✅ 推荐：在指定环境中安装包
+conda install -n science_env pandas
 
 # 导出环境
 conda env export > environment.yml
@@ -220,6 +225,8 @@ conda env export > environment.yml
 # 从文件创建环境
 conda env create -f environment.yml
 ```
+
+🔴 **避免使用**：`conda activate science_env` - 可能导致环境冲突
 
 ### LaTeX 数学符号速查
 
@@ -252,6 +259,7 @@ conda env create -f environment.yml
 使用前请确认：
 
 - [ ] 使用 `conda env list` 确认了 conda 环境
+- [ ] **✅ 避免使用 `conda activate`，使用 `conda run -n env_name`**
 - [ ] 输出文件遵循 `output_standards.md` 的命名规范
 - [ ] 日志中记录了所有输出文件的路径
 - [ ] matplotlib 使用了正确的 LaTeX 公式格式
@@ -276,6 +284,9 @@ A: 一般到分钟即可，同一时间多次运行可添加分钟序列号。
 
 ### Q: 这与 PEP 8 的关系？
 A: 本规范专注于科学计算的特殊需求，是 PEP 8 的补充。
+
+### Q: 为什么不再推荐使用 conda activate？
+A: 为了避免环境冲突和依赖问题，提高代码的可重现性和跨平台兼容性。详细原因请参考 `references/conda_commands.md`。
 
 ### Q: 为什么不再提供 bat 脚本？
 A: 为了简化项目结构并提供更好的跨平台兼容性，现在推荐直接使用 conda 命令行工具。详细命令请参考 `references/conda_commands.md`。
